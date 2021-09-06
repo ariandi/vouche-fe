@@ -47,6 +47,12 @@ export default {
       message: '',
     };
   },
+  mounted() {
+    console.log(123);
+  },
+  methods: {
+
+  }
 
 }
 </script>
