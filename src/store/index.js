@@ -2,11 +2,11 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 
-import { getLocalUser, getToken } from './helpers/auth';
+import { getLocalUser, getToken, logout } from './helpers/auth';
 
 Vue.use(Vuex)
 
-const user = getLocalUser();
+let user = getLocalUser();
 const token = getToken();
 
 export default new Vuex.Store({
@@ -33,6 +33,7 @@ export default new Vuex.Store({
       state.loading = false;
       state.currentUser = Object.assign({}, payload.data);
       state.currentToken = payload.token;
+      user = state.currentUser;
       localStorage.setItem('uservouch', JSON.stringify(state.currentUser));
       localStorage.setItem('tokenvouch', payload.token);
     },
@@ -51,14 +52,21 @@ export default new Vuex.Store({
     login(context) {
       context.commit('login');
     },
-    logout({ commit }) {
-      return new Promise((resolve) => {
-        commit('logout')
-        localStorage.removeItem('uservouch')
-        localStorage.removeItem('tokenvouch')
-        delete axios.defaults.headers.common['Authorization']
-        resolve()
-      })
+    async logout({ commit }, payload) {
+      try {
+        await logout(payload, user.id);
+        await commit('logout');
+        delete axios.defaults.headers.common['Authorization'];
+      } catch (e) {
+        console.log(e);
+        alert(e.message);
+      }
+
+      // return new Promise((resolve) => {
+      //   commit('logout')
+      //   delete axios.defaults.headers.common['Authorization']
+      //   resolve()
+      // })
     },
     loadingFinish(context) {
       context.commit('loadingFinish');

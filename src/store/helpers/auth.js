@@ -16,6 +16,18 @@ export function login(credentials){
   })
 }
 
+export function logout(payload, id){
+  return new Promise((res, rej) => {
+    Axios.put(baseUrl + 'users/' + id, payload)
+      .then((response) => {
+        res(response.data)
+      })
+      .catch((e) => {
+        rej(e.response.data);
+      });
+  })
+}
+
 export function getLocalUser(){
   const userStr = localStorage.getItem('uservouch')
 

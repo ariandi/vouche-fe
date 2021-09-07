@@ -90,7 +90,6 @@ export default {
       // console.log(this.form);
       await this.$store.dispatch('login');
       await this.checkForm();
-      console.log(this.$store.getters.authError)
       if (this.$store.getters.authError) {
         alert(this.$store.getters.authError);
         return false;
@@ -100,7 +99,7 @@ export default {
         let resp = await login(this.form);
         if (resp.code === '00') {
           this.$store.commit('loginSuccess', resp);
-          await this.$router.push({path: '/chat-room'});
+          await this.$router.push({path: '/chat-room?room_id=' + this.form.room_chat_id});
         } else {
           alert(resp.message);
         }
@@ -109,32 +108,6 @@ export default {
         this.$store.commit('loginFailed', e.message);
         alert(e.message);
       }
-
-
-      // login(this.form)
-      //     .then((resp) => {
-      //       console.log('res',resp)
-
-            // if(resp === 'Invalid Username or Password'){
-            //   this.$store.commit('loginFailed', {resp})
-            //   this.errorMsg = this.$store.getters.authError
-            //   this.overlay = false
-            //   return false
-            // }
-            //
-            // if(resp.error){
-            //   this.errorMsg = 'Invalid Username or Password'
-            //   this.overlay = false
-            //   return false
-            // }
-            //
-            // this.$store.commit('loginSuccess', resp)
-            // this.$router.push({path: '/'})
-          // })
-          // .catch((error) => {
-          //   this.$store.commit('loginFailed', {error})
-          //   this.errorMsg = this.$store.getters.authError
-          // });
     },
     checkForm(){
       let msg = null;
