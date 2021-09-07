@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 
 import { getLocalUser, getToken, logout } from './helpers/auth';
+import { getAllChatByRoom } from './helpers/chats';
 
 Vue.use(Vuex)
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     auth_error: null,
     isLoggedIn: !!user,
     header: null,
+    chatData: [],
   },
   mutations: {
     login(state) {
@@ -41,6 +43,9 @@ export default new Vuex.Store({
       state.loading = false
       state.auth_error = payload
     },
+    getChatByRoom(state, payload) {
+      state.chatData = payload.data;
+    },
     logout(state) {
       localStorage.removeItem('uservouch');
       localStorage.removeItem('tokenvouch');
@@ -61,12 +66,15 @@ export default new Vuex.Store({
         console.log(e);
         alert(e.message);
       }
-
-      // return new Promise((resolve) => {
-      //   commit('logout')
-      //   delete axios.defaults.headers.common['Authorization']
-      //   resolve()
-      // })
+    },
+    async getChatByRoom(context, payload) {
+      try {
+        let response = await getAllChatByRoom(payload);
+        context.commit('getChatByRoom', response);
+      } catch (e) {
+        console.log(e);
+        alert(e.message);
+      }
     },
     loadingFinish(context) {
       context.commit('loadingFinish');
@@ -88,6 +96,9 @@ export default new Vuex.Store({
     },
     authError(state) {
       return state.auth_error;
+    },
+    chatData(state) {
+      return state.chatData;
     },
   }
 });

@@ -68,23 +68,6 @@ export default {
   mounted() {
     console.log('entered app.');
   },
-  sockets: {
-    connect() {
-      // Fired when the socket connects.
-      this.isConnected = true;
-      console.log('socket connected')
-    },
-
-    disconnect() {
-      this.isConnected = false;
-      console.log('socket disconnect')
-    },
-
-    // Fired when the server sends something on the "messageChannel" channel.
-    usersChanged(data) {
-      this.socketMessage = data
-    }
-  },
   methods : {
     async onSubmit() {
       // console.log(this.form);

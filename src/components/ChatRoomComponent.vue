@@ -1,92 +1,104 @@
 <template>
   <div>
-    <b-row class="mb-3">
-      <b-col align-self="start" cols="6">
-        <span class="text-secondary">test tost</span>
-        <b-card class="text-start p-0" style="background: #e8e8e8;">
-          <div class="text-black p-0">
-            Test Message apap sdkskd sdjsjd fsjjs sds
-          </div>
-        </b-card>
-      </b-col>
-    </b-row>
+    <div id="container" ref="container" style="min-height: 450px; margin-bottom: 100px;">
+      <hr />
+      <template v-for="(chat, i) in chatData">
+        <b-row class="mb-3" :key="i" :align-h="chat.ownUser ? 'end' : 'start'" ref="data" :id="'data_' + i">
+          <b-col :align-self="chat.ownUser ? 'end' : 'start'" cols="6">
+            <span class="text-secondary" v-if="!chat.ownUser">{{ chat.username }}</span>
+            <b-card class="text-start p-0" :class="{ userChat: !chat.ownUser, 'bg-success': chat.ownUser }">
+              <div class="p-0" :class="{ 'text-black': !chat.ownUser, 'text-light': chat.ownUser }">
+                {{ chat.message }}
+              </div>
+            </b-card>
+          </b-col>
+        </b-row>
+      </template>
 
-    <b-row align-h="end" class="mb-3">
-      <b-col align-self="end" cols="6">
-        <b-card class="text-start bg-success">
-          <div class="text-light">
-            Test Message apap sdkskd sdjsjd fsjjs sds
-          </div>
-        </b-card>
-      </b-col>
-    </b-row>
-
-    <b-row align-h="end" class="mb-3">
-      <b-col align-self="end" cols="6">
-        <b-card class="text-start bg-success">
-          <div class="text-light">
-            Test Message apap sdkskd sdjsjd fsjjs sds
-          </div>
-        </b-card>
-      </b-col>
-    </b-row>
-
-    <b-row align-h="end" class="mb-3">
-      <b-col align-self="end" cols="6">
-        <b-card class="text-start bg-success">
-          <div class="text-light">
-            Test Message apap sdkskd sdjsjd fsjjs sds
-          </div>
-        </b-card>
-      </b-col>
-    </b-row>
+      <div ref="lastScroll" id="lastScroll"></div>
+    </div>
 
     <div class="position-fixed mb-3 w-100" style="bottom: 0; left: 0;">
       <div style="" class="widthProp">
-        <b-form-textarea>
+        <b-form-textarea
           class="w-100"
           id="textarea"
           v-model="message"
-          placeholder="Enter something..."
+          placeholder="Type message here"
           rows="1"
           max-rows="6"
           ></b-form-textarea>
-          <b-button class="position-absolute widthPropButtom" variant="success" pill>
+          <b-button class="position-absolute widthPropButtom" variant="success" pill @click="sumbitMessage">
             <b-icon-arrow-up></b-icon-arrow-up>
           </b-button>
       </div>
     </div>
-<!--    <b-row class="position-absolute mb-3 bottom-0">-->
-<!--      <b-col cols="12">-->
-<!--        <b-form-textarea-->
-<!--            class="w-100"-->
-<!--            id="textarea"-->
-<!--            v-model="message"-->
-<!--            placeholder="Enter something..."-->
-<!--            rows="1"-->
-<!--            max-rows="6"-->
-<!--        ></b-form-textarea>-->
-<!--        <b-button class="position-absolute" style="right: 20px; top: 13px;" variant="success" pill>-->
-<!--          <b-icon-arrow-up></b-icon-arrow-up>-->
-<!--        </b-button>-->
-<!--      </b-col>-->
-<!--    </b-row>-->
   </div>
 </template>
 
 <script>
+import {createChat} from '@/store/helpers/chats'
+import VueScrollTo from "vue-scrollto";
+
 export default {
   name: "ChatRoomComponent",
   data () {
     return {
       message: '',
+      chatData: [],
+      liveData: [],
     };
   },
+  props: ['room_id'],
   mounted() {
-    console.log(123);
+    setTimeout(async () => {
+      await this.getAllChat();
+      this.chatData = this.$store.getters.chatData;
+      this.setChatPosition();
+    }, 100)
+  },
+  sockets: {
+    connect() {
+      console.log('socket connected')
+    },
+
+    disconnect() {
+      console.log('socket disconnect')
+    },
+    chatChanged(data) {
+      this.liveData = data.data;
+      if (this.liveData.length > 0) {
+        this.chatData = this.liveData;
+        this.setChatPosition();
+      }
+    }
   },
   methods: {
-
+    async getAllChat() {
+      await this.$store.dispatch("getChatByRoom", this.room_id);
+    },
+    async sumbitMessage() {
+      let params = {
+        username: this.$store.getters.currentUser.username,
+        room_id: this.room_id,
+        message: this.message
+      }
+      let result = await createChat(params);
+      if (result.code === '00') {
+        this.$socket.emit('input-chat', this.room_id);
+      }
+    },
+    setChatPosition() {
+      this.chatData.forEach(val => {
+        val.ownUser = this.$store.getters.currentUser.username === val.username;
+      });
+      this.scrollToEnd();
+    },
+    async scrollToEnd() {
+      setTimeout(() => {
+        VueScrollTo.scrollTo('#lastScroll');
+      }, 500);
+    },
   }
 
 }
@@ -95,6 +107,9 @@ export default {
 <style scoped>
   .card-body {
     padding: 5px;
+  }
+  .userChat {
+    background: #e8e8e8;
   }
   .widthProp {
     margin: 0 auto;

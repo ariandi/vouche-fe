@@ -6,7 +6,7 @@
       </div>
       <h1>{{ $route.query.room_id }}</h1>
     </div>
-    <ChatRoomComponent class="mt-4" />
+    <ChatRoomComponent class="" :room_id="$route.query.room_id" />
   </b-container>
 </template>
 

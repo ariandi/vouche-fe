@@ -10,6 +10,9 @@ import moment from 'moment';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Axios from 'axios';
+// let VueScrollTo = require('vue-scrollto');
+import VueScrollTo from 'vue-scrollto';
+
 
 Vue.config.productionTip = false
 
@@ -17,6 +20,7 @@ Vue.config.productionTip = false
 Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
+Vue.use(VueScrollTo)
 
 // export const SocketInstance = socketio('http://localhost:3002', { transports : ['websocket'] });
 Vue.use(new VueSocketIO({
@@ -31,6 +35,7 @@ Vue.use(new VueSocketIO({
 
 Vue.prototype.$http = Axios;
 Vue.prototype.$moment = moment;
+// Vue.prototype.$vScrollTo = VueScrollTo;
 
 const token = localStorage.getItem('tokenvouch');
 if (token) {
