@@ -34,6 +34,7 @@ export default new Vuex.Store({
       state.isLoggedIn = true;
       state.loading = false;
       state.currentUser = Object.assign({}, payload.data);
+      console.log(payload)
       state.currentToken = payload.token;
       user = state.currentUser;
       localStorage.setItem('uservouch', JSON.stringify(state.currentUser));

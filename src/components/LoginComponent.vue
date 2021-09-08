@@ -41,9 +41,9 @@
             Join
           </b-button>
         </b-form>
-        <b-card class="mt-3" header="Form Data Result">
-          <pre class="m-0">{{ form }}</pre>
-        </b-card>
+<!--        <b-card class="mt-3" header="Form Data Result">-->
+<!--          <pre class="m-0">{{ form }}</pre>-->
+<!--        </b-card>-->
       </b-col>
       <b-col cols="12" sm="4">&nbsp;</b-col>
     </b-row>

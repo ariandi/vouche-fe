@@ -85,6 +85,7 @@ export default {
       }
       let result = await createChat(params);
       if (result.code === '00') {
+        this.message = '';
         this.$socket.emit('input-chat', this.room_id);
       }
     },

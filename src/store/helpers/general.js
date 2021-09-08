@@ -5,7 +5,7 @@ export function initialize(store, router) {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     const currentUser = store.state.currentUser;
     if(requiresAuth && !currentUser) {
-      next('/login');
+      next('/');
     } else if(to.path === '/' && currentUser) {
       next('/chat-room');
     } else {
@@ -16,7 +16,7 @@ export function initialize(store, router) {
   Axios.interceptors.response.use(null, (error) => {
     if (error.response.status === 401) {
       store.commit('logout');
-      router.push('/login');
+      router.push('/');
     }
 
     return Promise.reject(error);
@@ -28,5 +28,5 @@ export function initialize(store, router) {
 }
 
 export function setAuthorization(token) {
-  Axios.defaults.headers.common["Authorization"] = `Basic ${token}`
+  Axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
 }
